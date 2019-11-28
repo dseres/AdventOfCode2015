@@ -1,5 +1,5 @@
 AdventOfCode2015
 
-My solutions for the popular https://adventofcode.com/2015/ programming puzzles. I used Rust programming language to solve these puzzles.
+My solutions for the popular https://adventofcode.com/2015/ programming puzzles. Rust programming language was used to solve these puzzles.
 
 
