@@ -30,7 +30,7 @@ fn get_solution(pattern: &str)->u32{
 }
 
 fn compute_md5(n: u32) -> String {
-    let s = format!("iwrupvqb{}", n);
+    let s = format!("ckczppom{}", n);
     let digest = md5::compute(s);
     format!("{:x}", digest)
 }

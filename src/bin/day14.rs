@@ -91,8 +91,8 @@ impl ReinDeer {
         let mut rd = ReinDeer::new();
         rd.name = String::from(caps.get(1).unwrap().as_str());
         rd.speed = caps.get(2).unwrap().as_str().parse::<i32>().unwrap();
-        rd.flying_time = caps.get(3).unwrap().as_str().parse::<i32>().unwrap();;
-        rd.resting_time = caps.get(4).unwrap().as_str().parse::<i32>().unwrap();;
+        rd.flying_time = caps.get(3).unwrap().as_str().parse::<i32>().unwrap();
+        rd.resting_time = caps.get(4).unwrap().as_str().parse::<i32>().unwrap();
         rd
     }
 
