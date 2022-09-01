@@ -53,7 +53,7 @@ impl Box {
         let v0 = it.next().unwrap();
         let v1 = it.next().unwrap();
         let v2 = it.next().unwrap();
-        Box{
+        Box {
             l: v0.parse::<u32>().unwrap(),
             w: v1.parse::<u32>().unwrap(),
             h: v2.parse::<u32>().unwrap(),

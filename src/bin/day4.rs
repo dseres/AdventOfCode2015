@@ -17,14 +17,14 @@ fn main() {
     println!("Solution2: {}", get_solution("000000"));
 }
 
-fn get_solution(pattern: &str)->u32{
-    let mut i:u32=0;
-    loop{
+fn get_solution(pattern: &str) -> u32 {
+    let mut i: u32 = 0;
+    loop {
         let digest = compute_md5(i);
-        if digest.starts_with(pattern){
+        if digest.starts_with(pattern) {
             break;
         }
-        i+=1;
+        i += 1;
     }
     i
 }

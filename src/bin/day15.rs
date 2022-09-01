@@ -4,7 +4,7 @@ use regex::Regex;
 
 fn main() {
     let ingredients = input::read_input_file::<Ingredient>("./input/input15.txt");
-    println!("{:?}",&ingredients);
+    println!("{:?}", &ingredients);
     let mut p = Compositor::new(100, ingredients.len());
     p.iterate_recipes(ingredients.clone());
     println!("Solution1: {}", p.best1);
@@ -44,9 +44,16 @@ impl ReadFromLine<Ingredient> for Ingredient {
     }
 }
 
-impl Ingredient{
-    fn compose_to_recipe(ingredients: &[Ingredient], composition: &[i32]) -> Ingredient{
-        let mut recipe = Ingredient{ name: String::from("Recipe"), capacity:0, durability:0, flavor:0, texture: 0, calories:0};
+impl Ingredient {
+    fn compose_to_recipe(ingredients: &[Ingredient], composition: &[i32]) -> Ingredient {
+        let mut recipe = Ingredient {
+            name: String::from("Recipe"),
+            capacity: 0,
+            durability: 0,
+            flavor: 0,
+            texture: 0,
+            calories: 0,
+        };
         for (i, _item) in composition.iter().enumerate() {
             recipe.capacity += composition[i] * ingredients[i].capacity;
             recipe.durability += composition[i] * ingredients[i].durability;
@@ -54,14 +61,14 @@ impl Ingredient{
             recipe.texture += composition[i] * ingredients[i].texture;
             recipe.calories += composition[i] * ingredients[i].calories;
         }
-        recipe.capacity = std::cmp::max( recipe.capacity, 0);
-        recipe.durability = std::cmp::max( recipe.durability, 0);
-        recipe.flavor = std::cmp::max( recipe.flavor, 0);
-        recipe.texture = std::cmp::max( recipe.texture, 0);
+        recipe.capacity = std::cmp::max(recipe.capacity, 0);
+        recipe.durability = std::cmp::max(recipe.durability, 0);
+        recipe.flavor = std::cmp::max(recipe.flavor, 0);
+        recipe.texture = std::cmp::max(recipe.texture, 0);
         recipe
     }
 
-    fn get_point_and_calories(&self)->(i32,i32){
+    fn get_point_and_calories(&self) -> (i32, i32) {
         let mut point = self.capacity * self.durability * self.flavor * self.texture;
         point = std::cmp::max(0, point);
         (point, self.calories)
@@ -114,7 +121,7 @@ impl Compositor {
 
     fn check_recipe(&mut self, composition: &[i32]) {
         let recipe = Ingredient::compose_to_recipe(&self.ingredients, &composition);
-        let (point,calories) = recipe.get_point_and_calories();
+        let (point, calories) = recipe.get_point_and_calories();
         if point > self.best1 {
             self.best1 = point
         }

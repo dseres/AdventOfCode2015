@@ -104,7 +104,6 @@ impl AuntSue {
             && (self.perfumes == other.perfumes || other.perfumes.is_none())
     }
 
-
     fn match_other2(&self, other: &AuntSue) -> bool {
         (self.children == other.children || other.children.is_none())
             && (self.cats < other.cats || other.cats.is_none())

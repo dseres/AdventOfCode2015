@@ -11,12 +11,12 @@ pub mod input {
     where
         T: ReadFromLine<T>,
     {
-        let contents = std::fs::read_to_string(fname).expect(&("Cannot read input file: ".to_owned()+fname));
+        let contents =
+            std::fs::read_to_string(fname).expect(&("Cannot read input file: ".to_owned() + fname));
         let mut structs: Vec<T> = Vec::new();
         for line in contents.lines() {
             structs.push(T::from_line(&line));
         }
         structs
     }
-
 }

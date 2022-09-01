@@ -4,7 +4,6 @@ use std::io::BufRead;
 use std::io::BufReader;
 
 fn main() {
-
     assert!(is_nice2(&String::from("qjhvhtzxzqqjkmpb")));
     assert!(is_nice2(&String::from("xxyxx")));
     assert!(!is_nice2(&String::from("uurcxstgmygtbstg")));
@@ -12,9 +11,15 @@ fn main() {
 
     let f = File::open("./input/input5.txt").expect("Unable to open input file.");
     let f = BufReader::new(f);
-    let lines:Vec<String> = f.lines().map( |x| x.unwrap()).collect();
-    println!("Solution1: {}", lines.iter().filter(|x| is_nice(&x)).count());
-    println!("Solution2: {}", lines.iter().filter(|x| is_nice2(&x)).count());
+    let lines: Vec<String> = f.lines().map(|x| x.unwrap()).collect();
+    println!(
+        "Solution1: {}",
+        lines.iter().filter(|x| is_nice(&x)).count()
+    );
+    println!(
+        "Solution2: {}",
+        lines.iter().filter(|x| is_nice2(&x)).count()
+    );
 }
 
 fn is_nice(s: &str) -> bool {

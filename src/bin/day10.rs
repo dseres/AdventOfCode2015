@@ -7,7 +7,7 @@ fn main() {
 }
 
 fn unit_test() {
-    let solution  = iterate_look_and_say(&String::from("1"), 5);
+    let solution = iterate_look_and_say(&String::from("1"), 5);
     assert_eq!(&solution, "312211");
 }
 
@@ -27,7 +27,7 @@ fn look_and_say(input_str: &str) -> String {
     let mut prev = iter.next().unwrap();
     let mut counter = 1;
     for b in iter {
-        if b ==  prev {
+        if b == prev {
             counter += 1;
         } else {
             output_str.push_str(&counter.to_string());

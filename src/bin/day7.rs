@@ -1,6 +1,6 @@
+use regex::Regex;
 use std::collections::BTreeMap;
 use std::io::BufRead;
-use regex::Regex;
 
 fn main() {
     //unit_test();
@@ -118,7 +118,10 @@ impl Instruction {
         if let Some(m) = caps.name("op") {
             i.op = Operation::from(m.as_str());
         }
-        i.param2 = caps.name("param2").map(|m| Param::from(m.as_str())).unwrap();
+        i.param2 = caps
+            .name("param2")
+            .map(|m| Param::from(m.as_str()))
+            .unwrap();
         i.dest = caps.name("dest").map(|m| String::from(m.as_str())).unwrap();
         i
     }

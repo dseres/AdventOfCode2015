@@ -20,7 +20,7 @@ fn read_input() -> Vec<u8> {
 
 fn solution1(buffer: &[u8]) {
     let mut pos = Pos::new();
-    let mut houses : HashMap<Pos, i32> = HashMap::new();
+    let mut houses: HashMap<Pos, i32> = HashMap::new();
     houses.insert(pos, 1);
     for x in buffer {
         pos = pos.next(*x);
@@ -33,7 +33,7 @@ fn solution1(buffer: &[u8]) {
 fn solution2(buffer: &[u8]) {
     let mut santa_pos = Pos::new();
     let mut robo_pos = Pos::new();
-    let mut houses :HashMap<Pos, i32>= HashMap::new();
+    let mut houses: HashMap<Pos, i32> = HashMap::new();
     houses.insert(santa_pos, 2);
     let mut it = buffer.iter();
     loop {
@@ -71,10 +71,10 @@ impl PartialOrd for Pos {
 
 impl Ord for Pos {
     fn cmp(&self, other: &Pos) -> Ordering {
-        let c=self.x.cmp(&other.x);
-        match c{
+        let c = self.x.cmp(&other.x);
+        match c {
             std::cmp::Ordering::Equal => self.y.cmp(&other.y),
-            _ => c
+            _ => c,
         }
     }
 }

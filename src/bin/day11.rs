@@ -4,13 +4,22 @@ fn main() {
     let mut s2 = s1.clone();
     next(&mut s2);
     println!("Solution1: {}", String::from_utf8(s1.clone()).unwrap());
-    println!("Solution1: {}", String::from_utf8(generate_pass(&s2)).unwrap());
+    println!(
+        "Solution1: {}",
+        String::from_utf8(generate_pass(&s2)).unwrap()
+    );
 }
 
 fn unit_test() {
     assert!(has_two_doubles(b"abcdffaa"));
-    assert_eq!("abcdffaa", String::from_utf8(generate_pass(b"abcdefgh")).unwrap());
-    assert_eq!("ghjaabcc", String::from_utf8(generate_pass(b"ghijklmn")).unwrap());
+    assert_eq!(
+        "abcdffaa",
+        String::from_utf8(generate_pass(b"abcdefgh")).unwrap()
+    );
+    assert_eq!(
+        "ghjaabcc",
+        String::from_utf8(generate_pass(b"ghijklmn")).unwrap()
+    );
 }
 
 fn generate_pass(input: &[u8]) -> Vec<u8> {
