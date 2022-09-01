@@ -3,9 +3,9 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 
 fn main() {
-    // let input = std::fs::read_to_string("./input/input19.txt").expect("File io error.");
-    // let plant = Plant::from_string(&input);
-    // println!("Solution1: {}", plant.solution1());
+    let input = std::fs::read_to_string("./input/input19.txt").expect("File io error.");
+    let plant = Plant::from_string(&input);
+    println!("Solution1: {}", plant.solution1());
 }
 
 type Element = u8;
@@ -109,6 +109,10 @@ impl Plant {
             }
         }
         e_names
+    }
+
+    fn solution1(&self) -> usize {
+        0
     }
 
     // fn insert_elements(&mut self, e: Element, name: String) {
