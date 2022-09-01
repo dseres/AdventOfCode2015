@@ -4,8 +4,11 @@ use std::collections::HashSet;
 
 fn main() {
     let input = std::fs::read_to_string("./input/input19.txt").expect("File io error.");
-    let plant = Plant::from_string(&input);
-    println!("Solution1: {}", plant.solution1());
+    let mut plant = Plant::from_string(&input);
+    let solution1 = plant.solution1();
+    println!("Solution1: {}", solution1);
+    let solution2 = plant.solution2();
+    println!("Solution1: {}", solution2);
 }
 
 type Element = u8;
@@ -111,55 +114,62 @@ impl Plant {
         e_names
     }
 
-    fn solution1(&self) -> usize {
-        0
+    fn solution1(&mut self) -> usize {
+        self.apply_rules(self.molecule.clone()).len()
     }
 
-    // fn insert_elements(&mut self, e: Element, name: String) {
-    //     if !elements.contains_key(e) {
-    //         elements.insert(e, name);
-    //     }
-    // }
+    fn apply_rules(&mut self, molecule: Molecule) -> HashSet<Molecule> {
+        let mut molecules: HashSet<Molecule> = HashSet::new();
+        for i in 0..molecule.len() {
+            if self.rules.contains_key(&molecule[i]) {
+                for replace in self.rules.get_vec(&molecule[i]).unwrap() {
+                    let new_molecule = Self::apply_rule_on_molecule(i, replace, &molecule);
+                    molecules.insert(new_molecule);
+                }
+            }
+        }
+        molecules
+    }
 
-    // fn solution1(&self) -> usize {
-    //     self.apply_rules().len()
-    // }
+    fn apply_rule_on_molecule(i : usize, replace : &Molecule, target: &Molecule) -> Molecule {
+        let mut new_molecule = Molecule::new();
+        for j in 0..i{
+            new_molecule.push(target[j])
+        }
+        for e in replace {
+            new_molecule.push(e.clone());
+        }
+        for j in (i+1)..(target.len()){
+            new_molecule.push(target[j]);
+        }
+        new_molecule
+    }
 
-    // fn apply_rules(&self) -> HashSet<String> {
-    //     let mut molecules: HashSet<String> = HashSet::new();
-    //     for i in 0..self.molecule.len() - 1 {
-    //         if !self.check_and_apply_elem(&mut molecules, i, 1) {
-    //             self.check_and_apply_elem(&mut molecules, i, 0);
-    //         }
-    //     }
-    //     self.check_and_apply_elem(&mut molecules, self.molecule.len() - 1, 0);
-    //     molecules
-    // }
+    fn solution2(&mut self) -> i32 {
+        let mut m = Molecule::new();
+        m.push(self.element_map.get("e").unwrap().clone());
+        return self.next_molecule(0,m).unwrap();
+    }
 
-    // fn check_and_apply_elem(
-    //     &self,
-    //     mut molecules: &mut HashSet<String>,
-    //     i: usize,
-    //     l: usize,
-    // ) -> bool {
-    //     let elem = self.molecule.get(i..=i + l).unwrap();
-    //     if self.rules.contains_key(elem) {
-    //         self.apply_elem(&mut molecules, &elem, i, l);
-    //         true
-    //     } else {
-    //         false
-    //     }
-    // }
-
-    // fn apply_elem(&self, molecules: &mut HashSet<String>, elem: &str, i: usize, l: usize) {
-    //     let rule_vec = self.rules.get_vec(elem).unwrap();
-    //     for to_change in rule_vec {
-    //         let mut new_molecule = self.molecule.clone();
-    //         new_molecule.replace_range(i..=i + l, to_change);
-    //         molecules.insert(new_molecule);
-    //     }
-    // }
-
+    fn next_molecule(&mut self, step : i32, m: Molecule) -> Option<i32> {
+        if m.len() > self.molecule.len(){
+            None
+        }
+        else if m == self.molecule {
+            return Some(step)
+        }
+        else {
+            let next_molecules = self.apply_rules(m);
+            let ret = next_molecules.iter()
+                .map( |nm| self.next_molecule(step + 1, nm.clone()))
+                .filter( |o| o.is_some())
+                .min_by( |o1,o2| o1.unwrap().cmp(&o2.unwrap()) );
+            match ret {
+                None => None,
+                Some(option) => option
+            }    
+        }
+    }
 }
 
 
@@ -216,4 +226,33 @@ HOHArAl"#;
     assert_eq!(plant.reversed_element_map.len(),5);
     assert_eq!(plant.molecule.len(),5);
     assert_eq!(plant.rules.iter().map( |(_e,v)| v.len()).sum::<usize>(),5);
+}
+
+#[test]
+fn test_solution1() {
+    let input = r#"e => H
+e => O
+H => HO
+H => OH
+O => HH
+
+HOH"#;
+    let mut plant = Plant::from_string(input);
+    dbg!(&plant);
+    assert_eq!(plant.solution1(), 4);
+}
+
+
+#[test]
+fn test_solution2() {
+    let input = r#"e => H
+e => O
+H => HO
+H => OH
+O => HH
+
+HOHOHO"#;
+    let mut plant = Plant::from_string(input);
+    dbg!(&plant);
+    assert_eq!(plant.solution2(), 6);
 }
