@@ -134,7 +134,7 @@ impl Plant {
 
     fn apply_rule_on_molecule(i: usize, replace: &Molecule, target: &Molecule) -> Molecule {
         let mut new_molecule = Molecule::new();
-        for e in target.iter().take(i-1) {
+        for e in target.iter().take(i - 1) {
             new_molecule.push(*e)
         }
         for e in replace {

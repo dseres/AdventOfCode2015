@@ -52,8 +52,7 @@ impl Graph {
         let id = self.vertices.iter().position(|x| *(x.name) == *vertex);
         if let Some(id_val) = id {
             id_val
-        } 
-        else {
+        } else {
             let id = self.vertices.len();
             let v = Vertex {
                 id,
@@ -61,7 +60,7 @@ impl Graph {
             };
             self.vertices.push(v);
             id
-        } 
+        }
     }
 
     //Find minimal and maximal pathes of travelling salesman problem.
