@@ -15,8 +15,8 @@ fn solution1(input: i32) -> i32 {
         }
         //dbg!(&numbers);
     }
-    for i in 0..numbers.len() {
-        if numbers[i] >= input {
+    for (i, &n) in numbers.iter().enumerate() {
+        if n >= input {
             return (i + 1) as i32;
         }
     }
@@ -24,12 +24,12 @@ fn solution1(input: i32) -> i32 {
 }
 
 fn solution2(input: i32) -> i32 {
-    let mut numbers: Vec<usize> = vec![0; input as usize];
+    let mut numbers: Vec<i32> = vec![0; input as usize];
     for i in 1..=input {
         let mut ind = i - 1;
         for _j in 0..50 {
             if ind < input {
-                numbers[ind as usize] += i as usize * 11;
+                numbers[ind as usize] += i * 11;
                 ind += i;
             }
             else {
@@ -38,8 +38,8 @@ fn solution2(input: i32) -> i32 {
         }
         //dbg!(&numbers);
     }
-    for i in 0..numbers.len() {
-        if numbers[i] >= input as usize {
+    for (i, &n) in numbers.iter().enumerate() {
+        if n >= input {
             return (i + 1) as i32;
         }
     }
