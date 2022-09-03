@@ -39,8 +39,8 @@ impl Graph {
     }
 
     pub fn insert_edge(&mut self, from: &str, to: &str) -> (usize, usize) {
-        let id1 = self.insert_vertex(&from);
-        let id2 = self.insert_vertex(&to);
+        let id1 = self.insert_vertex(from);
+        let id2 = self.insert_vertex(to);
         self.edges.resize(self.vertices.len(), Vec::new());
         for v in self.edges.iter_mut() {
             v.resize(self.vertices.len(), 0);
@@ -50,17 +50,18 @@ impl Graph {
 
     pub fn insert_vertex(&mut self, vertex: &str) -> usize {
         let id = self.vertices.iter().position(|x| *(x.name) == *vertex);
-        if id.is_none() {
+        if let Some(id_val) = id {
+            id_val
+        } 
+        else {
             let id = self.vertices.len();
             let v = Vertex {
-                id: id,
+                id,
                 name: String::from(vertex),
             };
             self.vertices.push(v);
             id
-        } else {
-            id.unwrap()
-        }
+        } 
     }
 
     //Find minimal and maximal pathes of travelling salesman problem.
@@ -83,7 +84,7 @@ impl Graph {
         let mut max_length = std::i32::MIN;
         let mut max_path: Vec<Vertex> = Vec::new();
         while let Some(path) = heap.next_permutation() {
-            let length = len_func(self, &path);
+            let length = len_func(self, path);
             if length < min_length {
                 min_length = length;
                 min_path = path.clone();
@@ -132,13 +133,13 @@ impl std::fmt::Display for Graph {
         for v in self.vertices.iter() {
             write!(f, "{}, ", v)?;
         }
-        writeln!(f, "")?;
+        writeln!(f)?;
         writeln!(f, "Edges:")?;
         for ev in self.edges.iter() {
             for e in ev.iter() {
                 write!(f, "{}, ", e)?;
             }
-            writeln!(f, "")?;
+            writeln!(f)?;
         }
         Ok(())
     }

@@ -35,14 +35,14 @@ fn solution2(contents: &str) {
 fn count(val: &JsonValue) -> i64 {
     match val {
         JsonValue::Number(n) => n.as_fixed_point_i64(0).unwrap(),
-        JsonValue::Array(jarray) => count_array(&jarray),
-        JsonValue::Object(jobj) => count_obj(&jobj),
+        JsonValue::Array(jarray) => count_array(jarray),
+        JsonValue::Object(jobj) => count_obj(jobj),
         _ => 0,
     }
 }
 
 fn count_array(jarray: &[JsonValue]) -> i64 {
-    jarray.iter().map(|v| count(v)).sum()
+    jarray.iter().map(count).sum()
 }
 
 fn count_obj(jobj: &Object) -> i64 {
@@ -52,14 +52,14 @@ fn count_obj(jobj: &Object) -> i64 {
 fn count2(val: &JsonValue) -> i64 {
     match val {
         JsonValue::Number(n) => n.as_fixed_point_i64(0).unwrap(),
-        JsonValue::Array(jarray) => count_array2(&jarray),
-        JsonValue::Object(jobj) => count_obj2(&jobj),
+        JsonValue::Array(jarray) => count_array2(jarray),
+        JsonValue::Object(jobj) => count_obj2(jobj),
         _ => 0,
     }
 }
 
 fn count_array2(jarray: &[JsonValue]) -> i64 {
-    jarray.iter().map(|v| count2(v)).sum()
+    jarray.iter().map(count2).sum()
 }
 
 fn count_obj2(jobj: &Object) -> i64 {

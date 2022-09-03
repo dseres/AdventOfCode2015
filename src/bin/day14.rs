@@ -18,12 +18,12 @@ fn main() {
 fn get_reindeers(input: &str) -> Vec<ReinDeer> {
     let mut reindeers: Vec<ReinDeer> = Vec::new();
     for line in input.lines() {
-        reindeers.push(ReinDeer::from_line(&line));
+        reindeers.push(ReinDeer::from_line(line));
     }
     reindeers
 }
 
-fn simulate_race1(time: i32, reindeers: &mut Vec<ReinDeer>) {
+fn simulate_race1(time: i32, reindeers: &mut [ReinDeer]) {
     for rd in reindeers.iter_mut() {
         rd.start_race();
     }
@@ -34,7 +34,7 @@ fn simulate_race1(time: i32, reindeers: &mut Vec<ReinDeer>) {
     }
 }
 
-fn simulate_race2(time: i32, reindeers: &mut Vec<ReinDeer>) {
+fn simulate_race2(time: i32, reindeers: &mut [ReinDeer]) {
     for rd in reindeers.iter_mut() {
         rd.start_race();
     }
@@ -87,7 +87,7 @@ impl ReinDeer {
         lazy_static::lazy_static! {
             static ref REG: Regex = Regex::new(r"^(\w+) can fly (\d+) km/s for (\d+) seconds, but then must rest for (\d+) seconds.$").unwrap();
         }
-        let caps = REG.captures(&line).unwrap();
+        let caps = REG.captures(line).unwrap();
         let mut rd = ReinDeer::new();
         rd.name = String::from(caps.get(1).unwrap().as_str());
         rd.speed = caps.get(2).unwrap().as_str().parse::<i32>().unwrap();

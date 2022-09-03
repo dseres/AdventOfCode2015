@@ -29,13 +29,13 @@ fn parse_line(line: &str) -> (String, String, i32) {
     lazy_static::lazy_static! {
         static ref REG: Regex = Regex::new(r"^(\w+) would (gain|lose) (\d+) happiness units by sitting next to (\w+).$").unwrap();
     }
-    let caps = REG.captures(&line).unwrap();
+    let caps = REG.captures(line).unwrap();
     let from: String = caps.get(1).map(|m| String::from(m.as_str())).unwrap();
     let gain_or_lose: String = caps.get(2).map(|m| String::from(m.as_str())).unwrap();
     let gain_or_lose = if gain_or_lose == "gain" { 1 } else { -1 };
     let dist: i32 = caps
         .get(3)
-        .map(|m| gain_or_lose * i32::from_str_radix(m.as_str(), 10).unwrap())
+        .map(|m| gain_or_lose * m.as_str().parse::<i32>().unwrap())
         .unwrap();
     let to: String = caps.get(4).map(|m| String::from(m.as_str())).unwrap();
     (from, to, dist)

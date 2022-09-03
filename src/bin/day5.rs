@@ -14,11 +14,11 @@ fn main() {
     let lines: Vec<String> = f.lines().map(|x| x.unwrap()).collect();
     println!(
         "Solution1: {}",
-        lines.iter().filter(|x| is_nice(&x)).count()
+        lines.iter().filter(|x| is_nice(x)).count()
     );
     println!(
         "Solution2: {}",
-        lines.iter().filter(|x| is_nice2(&x)).count()
+        lines.iter().filter(|x| is_nice2(x)).count()
     );
 }
 

@@ -47,9 +47,9 @@ impl LightDecoration {
     fn parse_line(&mut self, line: &str) {
         let mut it = line.split_whitespace();
         let op = self.parse_op(&mut it);
-        let (x0, y0) = self.parse_point(&it.next().unwrap());
+        let (x0, y0) = self.parse_point(it.next().unwrap());
         it.next();
-        let (x1, y1) = self.parse_point(&it.next().unwrap());
+        let (x1, y1) = self.parse_point(it.next().unwrap());
         self.swith_lights(&op, x0, y0, x1, y1);
     }
 
@@ -77,7 +77,7 @@ impl LightDecoration {
         //println!("{:?} {:?} {:?} {:?} {:?}", op, x0, y0, x1, y1);
         for i in x0..=x1 {
             for j in y0..=y1 {
-                self.switch_light(&op, i, j);
+                self.switch_light(op, i, j);
             }
         }
     }
@@ -132,7 +132,7 @@ impl std::fmt::Display for LightDecoration {
                 let c = if self.lights[i][j] { 'X' } else { '.' };
                 write!(f, "{}", c).unwrap();
             }
-            writeln!(f, "").unwrap();
+            writeln!(f).unwrap();
         }
         Ok(())
     }

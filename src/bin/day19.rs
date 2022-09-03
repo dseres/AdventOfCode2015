@@ -76,16 +76,16 @@ impl Plant {
         let last_line = lines.pop().unwrap();
         self.molecule = Self::split_str(last_line)
             .iter()
-            .map(|s| self.element_map.get(s).unwrap().clone())
+            .map(|s| *self.element_map.get(s).unwrap())
             .collect();
         lines.pop();
         //Parse rules
         for line in lines {
             let rule_parts = line.split(" => ").collect::<Vec<&str>>();
-            let e: Element = self.element_map.get(rule_parts[0]).unwrap().clone();
+            let e: Element = *self.element_map.get(rule_parts[0]).unwrap();
             let m: Molecule = Self::split_str(rule_parts[1])
                 .iter()
-                .map(|s| self.element_map.get(s).unwrap().clone())
+                .map(|s| *self.element_map.get(s).unwrap())
                 .collect();
             self.rules.insert(e, m);
         }
@@ -93,7 +93,7 @@ impl Plant {
 
     fn split_str(input: &str) -> Vec<String> {
         let mut e_names: Vec<String> = Vec::new();
-        if input.len() == 0 {
+        if input.is_empty() {
         } else if input.len() == 1 {
             e_names.push(String::from(input));
         } else {
@@ -134,30 +134,29 @@ impl Plant {
 
     fn apply_rule_on_molecule(i: usize, replace: &Molecule, target: &Molecule) -> Molecule {
         let mut new_molecule = Molecule::new();
-        for j in 0..i {
-            new_molecule.push(target[j])
+        for e in target.iter().take(i-1) {
+            new_molecule.push(*e)
         }
         for e in replace {
-            new_molecule.push(e.clone());
+            new_molecule.push(*e);
         }
-        for j in (i + 1)..(target.len()) {
-            new_molecule.push(target[j]);
+        for e in target.iter().skip(i) {
+            new_molecule.push(*e);
         }
         new_molecule
     }
 
     #[allow(dead_code)]
     fn solution2_brute_force(&mut self) -> i32 {
-        let mut m = Molecule::new();
-        m.push(self.element_map.get("e").unwrap().clone());
-        return self.next_molecule(0, m).unwrap();
+        let m = vec![*self.element_map.get("e").unwrap()];
+        self.next_molecule(0, m).unwrap()
     }
 
     fn next_molecule(&mut self, step: i32, m: Molecule) -> Option<i32> {
         if m.len() > self.molecule.len() {
             None
         } else if m == self.molecule {
-            return Some(step);
+            Some(step)
         } else {
             let next_molecules = self.apply_rules(m);
             let ret = next_molecules
@@ -178,7 +177,6 @@ impl Plant {
         let mut i = self.molecule.iter();
         loop {
             let n = i.next();
-            dbg!(counter, n);
             if let Some(m) = n {
                 if *m == *rn {
                     counter += 1 + self.count_rn_ar_block(&mut i);
@@ -200,7 +198,6 @@ impl Plant {
         dbg!(rn, ar, y);
         loop {
             if let Some(m) = iter.next() {
-                dbg!(counter, m);
                 if *m == *rn {
                     counter += 1 + self.count_rn_ar_block(iter);
                 } else if *m == *ar {

@@ -72,7 +72,7 @@ impl Display for Panel {
             for l in line {
                 write!(f, "{}", l).unwrap();
             }
-            writeln!(f, "").unwrap();
+            writeln!(f).unwrap();
         }
         write!(f, "")
     }
@@ -154,14 +154,14 @@ fn unit_test() {
 ..#...
 #.#..#
 ####..";
-    let mut p = Panel::from(&input);
+    let mut p = Panel::from(input);
     println!("{}", p);
     for _i in 0..4 {
         p.tick();
         //println!("{}", p);
     }
     assert_eq!(4, p.get_ons());
-    let mut p = Panel::from(&input);
+    let mut p = Panel::from(input);
     for _i in 0..5 {
         p.tick2();
     }

@@ -152,7 +152,7 @@ impl Param {
     }
 
     fn is_number(s: &str) -> bool {
-        s.chars().next().unwrap().is_digit(10)
+        s.chars().next().unwrap().is_ascii_digit()
     }
 
     fn is_wire(s: &str) -> bool {

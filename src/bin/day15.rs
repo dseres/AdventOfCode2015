@@ -6,7 +6,7 @@ fn main() {
     let ingredients = input::read_input_file::<Ingredient>("./input/input15.txt");
     println!("{:?}", &ingredients);
     let mut p = Compositor::new(100, ingredients.len());
-    p.iterate_recipes(ingredients.clone());
+    p.iterate_recipes(ingredients);
     println!("Solution1: {}", p.best1);
     println!("Solution2: {}", p.best2);
 }
@@ -25,7 +25,7 @@ impl ReadFromLine<Ingredient> for Ingredient {
         lazy_static::lazy_static! {
             static ref REG: Regex = Regex::new(r"^(\w+): capacity ([\-0-9]+), durability ([\-0-9]+), flavor ([\-0-9]+), texture ([\-0-9]+), calories ([\-0-9]+)$").unwrap();
         }
-        let caps = REG.captures(&line).unwrap();
+        let caps = REG.captures(line).unwrap();
         let capacity = caps.get(2).unwrap().as_str().parse::<i32>().unwrap();
         let durability = caps.get(3).unwrap().as_str().parse::<i32>().unwrap();
         let flavor = caps.get(4).unwrap().as_str().parse::<i32>().unwrap();
@@ -116,7 +116,7 @@ impl Compositor {
     }
 
     fn check_recipe(&mut self, composition: &[i32]) {
-        let recipe = Ingredient::compose_to_recipe(&self.ingredients, &composition);
+        let recipe = Ingredient::compose_to_recipe(&self.ingredients, composition);
         let (point, calories) = recipe.get_point_and_calories();
         if point > self.best1 {
             self.best1 = point

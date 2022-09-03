@@ -15,7 +15,7 @@ fn main() {
 fn parse(contents: &str) -> Graph {
     let mut graph = Graph::new();
     for line in contents.lines() {
-        let (from, to, dist) = parse_line(&line);
+        let (from, to, dist) = parse_line(line);
         graph.insert_edge_or_increase_weight(&from, &to, dist);
     }
     graph
@@ -25,12 +25,12 @@ fn parse_line(line: &str) -> (String, String, i32) {
     lazy_static::lazy_static! {
         static ref REG: Regex = Regex::new(r"^(\w+) to (\w+) = (\d+)$").unwrap();
     }
-    let caps = REG.captures(&line).unwrap();
+    let caps = REG.captures(line).unwrap();
     let from: String = caps.get(1).map(|m| String::from(m.as_str())).unwrap();
     let to: String = caps.get(2).map(|m| String::from(m.as_str())).unwrap();
     let dist: i32 = caps
         .get(3)
-        .map(|m| i32::from_str_radix(m.as_str(), 10).unwrap())
+        .map(|m| m.as_str().parse::<i32>().unwrap())
         .unwrap();
     (from, to, dist)
 }
