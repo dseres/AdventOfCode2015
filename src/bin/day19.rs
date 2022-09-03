@@ -1,6 +1,7 @@
 use multimap::MultiMap;
 use std::collections::HashMap;
 use std::collections::HashSet;
+use std::i32;
 
 fn main() {
     let input = std::fs::read_to_string("./input/input19.txt").expect("File io error.");
@@ -17,7 +18,7 @@ type Molecule = Vec<u8>;
 #[derive(Debug)]
 struct Plant {
     element_map: HashMap<String, Element>,
-    reversed_element_map: HashMap<Element,String>,
+    reversed_element_map: HashMap<Element, String>,
     rules: MultiMap<Element, Molecule>,
     molecule: Molecule,
 }
@@ -131,47 +132,91 @@ impl Plant {
         molecules
     }
 
-    fn apply_rule_on_molecule(i : usize, replace : &Molecule, target: &Molecule) -> Molecule {
+    fn apply_rule_on_molecule(i: usize, replace: &Molecule, target: &Molecule) -> Molecule {
         let mut new_molecule = Molecule::new();
-        for j in 0..i{
+        for j in 0..i {
             new_molecule.push(target[j])
         }
         for e in replace {
             new_molecule.push(e.clone());
         }
-        for j in (i+1)..(target.len()){
+        for j in (i + 1)..(target.len()) {
             new_molecule.push(target[j]);
         }
         new_molecule
     }
 
-    fn solution2(&mut self) -> i32 {
+    #[allow(dead_code)]
+    fn solution2_brute_force(&mut self) -> i32 {
         let mut m = Molecule::new();
         m.push(self.element_map.get("e").unwrap().clone());
-        return self.next_molecule(0,m).unwrap();
+        return self.next_molecule(0, m).unwrap();
     }
 
-    fn next_molecule(&mut self, step : i32, m: Molecule) -> Option<i32> {
-        if m.len() > self.molecule.len(){
+    fn next_molecule(&mut self, step: i32, m: Molecule) -> Option<i32> {
+        if m.len() > self.molecule.len() {
             None
-        }
-        else if m == self.molecule {
-            return Some(step)
-        }
-        else {
+        } else if m == self.molecule {
+            return Some(step);
+        } else {
             let next_molecules = self.apply_rules(m);
-            let ret = next_molecules.iter()
-                .map( |nm| self.next_molecule(step + 1, nm.clone()))
-                .filter( |o| o.is_some())
-                .min_by( |o1,o2| o1.unwrap().cmp(&o2.unwrap()) );
+            let ret = next_molecules
+                .iter()
+                .map(|nm| self.next_molecule(step + 1, nm.clone()))
+                .filter(|o| o.is_some())
+                .min_by(|o1, o2| o1.unwrap().cmp(&o2.unwrap()));
             match ret {
                 None => None,
-                Some(option) => option
-            }    
+                Some(option) => option,
+            }
         }
     }
-}
 
+    fn solution2(&mut self) -> i32 {
+        let rn = self.element_map.get("Rn").unwrap();
+        let mut counter = -1;
+        let mut i = self.molecule.iter();
+        loop {
+            let n = i.next();
+            dbg!(counter, n);
+            if let Some(m) = n {
+                if *m == *rn {
+                    counter += 1 + self.count_rn_ar_block(&mut i);
+                } else {
+                    counter += 1;
+                }
+            } else {
+                break;
+            }
+        }
+        counter
+    }
+
+    fn count_rn_ar_block(&self, iter: &mut dyn Iterator<Item = &u8>) -> i32 {
+        let mut counter = -1;
+        let rn = self.element_map.get("Rn").unwrap();
+        let ar = self.element_map.get("Ar").unwrap();
+        let y = self.element_map.get("Y").unwrap();
+        dbg!(rn, ar, y);
+        loop {
+            if let Some(m) = iter.next() {
+                dbg!(counter, m);
+                if *m == *rn {
+                    counter += 1 + self.count_rn_ar_block(iter);
+                } else if *m == *ar {
+                    break;
+                } else if *m == *y {
+                    dbg!(counter);
+                    counter -= 1;
+                } else {
+                    dbg!(counter);
+                    counter += 1;
+                }
+            }
+        }
+        counter
+    }
+}
 
 #[test]
 fn test_split_str() {
@@ -222,10 +267,10 @@ O => HH
 HOHArAl"#;
     let plant = Plant::from_string(input);
     dbg!(&plant);
-    assert_eq!(plant.element_map.len(),5);
-    assert_eq!(plant.reversed_element_map.len(),5);
-    assert_eq!(plant.molecule.len(),5);
-    assert_eq!(plant.rules.iter().map( |(_e,v)| v.len()).sum::<usize>(),5);
+    assert_eq!(plant.element_map.len(), 5);
+    assert_eq!(plant.reversed_element_map.len(), 5);
+    assert_eq!(plant.molecule.len(), 5);
+    assert_eq!(plant.rules.iter().map(|(_e, v)| v.len()).sum::<usize>(), 5);
 }
 
 #[test]
@@ -242,9 +287,8 @@ HOH"#;
     assert_eq!(plant.solution1(), 4);
 }
 
-
 #[test]
-fn test_solution2() {
+fn test_solution2_brute_force() {
     let input = r#"e => H
 e => O
 H => HO
@@ -254,5 +298,22 @@ O => HH
 HOHOHO"#;
     let mut plant = Plant::from_string(input);
     dbg!(&plant);
-    assert_eq!(plant.solution2(), 6);
+    assert_eq!(plant.solution2_brute_force(), 6);
+}
+
+#[test]
+fn test_solution2_on_custom_molecule() {
+    let input = std::fs::read_to_string("./input/input19.txt").expect("File io error.");
+    let mut lines: Vec<_> = input.lines().collect();
+    let last_i = lines.len() - 1;
+    // e-> NAl -> HSiAl -> OBSiAl -> OBSiThRnFAr -> OBSiThRnCaFAr -> OBSiThRnCaCaFAr -> OBSiThRnCaPRnFArFAr -> OBSiThRnPBPRnFArFAr
+    lines[last_i] = "OBSiThRnPBPRnFArFAr";
+    let input = lines.join("\n");
+    // let mut plant = Plant::from_string(&input);
+    // let solution2 = plant.solution2_brute_force();
+    // assert_eq!(solution2, 4);
+
+    let mut plant = Plant::from_string(&input);
+    let solution2 = plant.solution2();
+    assert_eq!(solution2, 8);
 }

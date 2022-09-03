@@ -87,7 +87,7 @@ impl AuntSue {
             "trees" => self.trees = Some(v),
             "cars" => self.cars = Some(v),
             "perfumes" => self.perfumes = Some(v),
-            _ => panic!(String::from("Bad property: ") + prop),
+            _ => panic!("Bad property: {}", prop),
         }
     }
 

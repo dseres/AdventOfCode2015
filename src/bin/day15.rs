@@ -13,7 +13,6 @@ fn main() {
 
 #[derive(Debug, Clone, Default)]
 struct Ingredient {
-    name: String,
     capacity: i32,
     durability: i32,
     flavor: i32,
@@ -27,14 +26,12 @@ impl ReadFromLine<Ingredient> for Ingredient {
             static ref REG: Regex = Regex::new(r"^(\w+): capacity ([\-0-9]+), durability ([\-0-9]+), flavor ([\-0-9]+), texture ([\-0-9]+), calories ([\-0-9]+)$").unwrap();
         }
         let caps = REG.captures(&line).unwrap();
-        let name = String::from(caps.get(1).unwrap().as_str());
         let capacity = caps.get(2).unwrap().as_str().parse::<i32>().unwrap();
         let durability = caps.get(3).unwrap().as_str().parse::<i32>().unwrap();
         let flavor = caps.get(4).unwrap().as_str().parse::<i32>().unwrap();
         let texture = caps.get(5).unwrap().as_str().parse::<i32>().unwrap();
         let calories = caps.get(6).unwrap().as_str().parse::<i32>().unwrap();
         Ingredient {
-            name,
             capacity,
             durability,
             flavor,
@@ -47,7 +44,6 @@ impl ReadFromLine<Ingredient> for Ingredient {
 impl Ingredient {
     fn compose_to_recipe(ingredients: &[Ingredient], composition: &[i32]) -> Ingredient {
         let mut recipe = Ingredient {
-            name: String::from("Recipe"),
             capacity: 0,
             durability: 0,
             flavor: 0,

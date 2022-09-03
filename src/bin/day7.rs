@@ -82,7 +82,7 @@ impl Circuit {
                 let mut msg = String::from("The following wire has more than one rule: ");
                 msg.push_str(&i.dest);
                 msg.push('.');
-                panic!(msg);
+                panic!("{}", msg);
             }
             circuit.insts.insert(i.dest.clone(), i);
         }
@@ -147,7 +147,7 @@ impl Param {
             let mut msg = String::from("Bad param: ");
             msg.push_str(s);
             msg.push('.');
-            panic!(msg);
+            panic!("{}", msg);
         }
     }
 
@@ -182,7 +182,7 @@ impl Operation {
                 let mut msg = String::from("Bad operation: ");
                 msg.push_str(s);
                 msg.push('.');
-                panic!(msg);
+                panic!("{}", msg);
             }
         }
     }
