@@ -31,8 +31,7 @@ fn solution2(input: i32) -> i32 {
             if ind < input {
                 numbers[ind as usize] += i * 11;
                 ind += i;
-            }
-            else {
+            } else {
                 break;
             }
         }
