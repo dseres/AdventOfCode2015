@@ -1,4 +1,3 @@
-use std::ops::Index;
 
 fn main(){
     let input = std::fs::read_to_string("input/input22.txt").unwrap();
@@ -7,14 +6,12 @@ fn main(){
 }
 
 fn solution1(input: &str) -> i32 {
-    let boss = Player::read_boss(input);
-    let henry = Player::create_little_henry();
-    0
+    let mut boss = Player::read_boss(input);
+    let mut henry = Player::create_little_henry();
+    henry.iterate_over_spells(&mut boss).unwrap()
 }
 
-fn solution2(input: &str) -> i32 {
-    let boss = Player::read_boss(input);
-    let henry = Player::create_little_henry();
+fn solution2(_input: &str) -> i32 {
     0
 }
 
@@ -30,16 +27,6 @@ struct Player {
 }
 
 impl Player {
-    fn new() -> Player {
-        Player {
-            hp: 0,
-            damage: 0,
-            armor: 0,
-            mana: 0,
-            spells: Vec::new(),
-            effects: Vec::new()
-        }
-    }
 
     fn read_boss(input: &str) -> Player {
         let mut lines = input.lines();
@@ -74,40 +61,52 @@ impl Player {
         self.hp <= 0
     }
 
+    fn iterate_over_spells(&mut self, other:&mut Player) -> Option<i32>{
+        let mut min_mana = i32::MAX;
+        for spell_idx in 0..self.spells.len(){
+            if let Some(mana) = self.check_double_turn(other, spell_idx){
+                min_mana = std::cmp::min(min_mana, mana);
+            }
+        }
+        if min_mana < i32::MAX {
+            Some(min_mana)
+        } else {
+            None
+        }
+    }
+
     // Returns true if actual player wins
-    fn check_one_turn(&mut self, other: &mut Player) -> Option<i32> {
+    fn check_double_turn(&mut self, other: &mut Player, spell_idx: usize) -> Option<i32> {
         self.apply_effects(other);
         if other.is_died(){
             return Some(0);
         }
-        let mut min_mana = i32::MAX;
-        for spell_idx in 0..self.spells.len(){
-            let spell = &self.spells[spell_idx];
-            if !self.can_cast(spell){
-                continue;
-            }
-            let mut used_mana = spell.cost;
-            let mut new_player = self.clone();
-            let mut new_boss = other.clone();
-            new_player.cast_spell(&mut new_boss, spell);
-            if new_boss.is_died(){
-                min_mana = std::cmp::min(min_mana, used_mana);
-            } else {
-                new_player.check_one_turn(&mut new_boss);
-            }
+        let spell = &self.spells[spell_idx];
+        if !self.has_enough_mana(spell){
+            return None;
+        }
+        let used_mana = spell.cost;
+        let mut new_player = self.clone();
+        let mut new_boss = other.clone();
+        new_player.cast_spell(&mut new_boss, spell);
+        if new_boss.is_died(){
+            return Some(used_mana);
         }
         self.apply_effects(other);
         if other.is_died(){
-            return Some(min_mana);
+            return Some(used_mana);
         }
         self.apply_damage(other.damage);
         if self.is_died() {
             return None;
         }
-        Some(min_mana)
+        match new_player.iterate_over_spells(&mut new_boss){
+            None=> None,
+            Some(next_mana) => Some(used_mana + next_mana),
+        }
     }
 
-    fn can_cast(&self, spell: &Spell)->bool{
+    fn has_enough_mana(&self, spell: &Spell)->bool{
         spell.cost <= self.mana
     }
 
@@ -129,13 +128,15 @@ impl Player {
     }
 
     fn apply_effects(&mut self, other: &mut Player){
-        for i in 0..self.effects.len(){
-            self.apply_effect(other, i);
+        for effect_idx in 0..self.effects.len(){
+            //dbg!(effect_idx, &self.effects);
+            self.apply_effect(other, effect_idx);
         }
+        self.remove_lasted_effects();
     }
 
     fn apply_effect(&mut self, other: &mut Player, effect_idx: usize){
-        let mut effect = &self.effects[effect_idx];
+        let mut effect = &mut self.effects[effect_idx];
         if effect.damage > 0{
             other.apply_damage(effect.damage)
         }
@@ -145,13 +146,16 @@ impl Player {
         if effect.mana > 0 {
             self.mana += effect.mana;
         }
-        self.handle_turn(effect_idx);
+        effect.turns -= 1;
     }
 
-    fn handle_turn(&mut self, effect_idx: usize){
-        self.effects[effect_idx].turns -= 1;
-        if self.effects[effect_idx].turns == 0 {
-            self.effects.remove(effect_idx);
+    fn remove_lasted_effects(&mut self){
+        let effects = self.effects.clone();
+        self.effects = Vec::new();
+        for effect in effects{
+            if effect.turns > 0 {
+                self.effects.push(effect);
+            }
         }
     }
 
