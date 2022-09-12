@@ -62,41 +62,41 @@ impl Player {
     }
 
     fn iterate_over_spells(&mut self, other:&mut Player) -> Option<i32>{
+        //dbg!(&self, &other);
+        let mut ret : Option<i32> = None;
         let mut min_mana = i32::MAX;
         for spell_idx in 0..self.spells.len(){
             if let Some(mana) = self.check_double_turn(other, spell_idx){
                 min_mana = std::cmp::min(min_mana, mana);
+                ret = Some(min_mana);
             }
         }
-        if min_mana < i32::MAX {
-            Some(min_mana)
-        } else {
-            None
-        }
+        ret
     }
 
     // Returns true if actual player wins
     fn check_double_turn(&mut self, other: &mut Player, spell_idx: usize) -> Option<i32> {
-        self.apply_effects(other);
-        if other.is_died(){
+        let mut new_player = self.clone();
+        let mut new_boss = other.clone();
+        new_player.apply_effects(&mut new_boss);
+        if new_boss.is_died(){
             return Some(0);
         }
         let spell = &self.spells[spell_idx];
-        if !self.has_enough_mana(spell){
+        //dbg!(&spell);
+        if !new_player.has_enough_mana(spell){
             return None;
         }
         let used_mana = spell.cost;
-        let mut new_player = self.clone();
-        let mut new_boss = other.clone();
         new_player.cast_spell(&mut new_boss, spell);
         if new_boss.is_died(){
             return Some(used_mana);
         }
-        self.apply_effects(other);
-        if other.is_died(){
+        new_player.apply_effects(&mut new_boss);
+        if new_boss.is_died(){
             return Some(used_mana);
         }
-        self.apply_damage(other.damage);
+        self.apply_damage(new_boss.damage);
         if self.is_died() {
             return None;
         }
@@ -118,6 +118,7 @@ impl Player {
         } else {
             //apply effect
             if self.is_effect_applicable(spell){
+                self.mana -= spell.cost;
                 self.effects.push(spell.clone());
             }
         }
@@ -161,7 +162,7 @@ impl Player {
 
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 struct Spell {
     name : String,
     cost : i32,
@@ -180,7 +181,7 @@ impl Spell {
 
 fn create_spells()->Vec<Spell>{
     vec![
-        Spell{ name: String::from("Macig missile"), cost: 53, damage: 4, healing : 0, mana: 0, armor: 0, turns : 0},
+        Spell{ name: String::from("Magic missile"), cost: 53, damage: 4, healing : 0, mana: 0, armor: 0, turns : 0},
         Spell{ name: String::from("Drain"), cost: 73, damage: 2, healing : 2, mana: 0, armor: 0, turns : 0},
         Spell{ name: String::from("Shield"), cost: 113, damage: 0, healing : 0, mana: 0, armor: 7, turns : 6},
         Spell{ name: String::from("Poison"), cost: 173, damage: 3, healing : 0, mana: 0, armor: 0, turns : 6},
@@ -189,3 +190,44 @@ fn create_spells()->Vec<Spell>{
 }
 
 
+#[test]
+fn test_example1(){
+    let mut henry = Player{ hp: 10, damage: 0, armor: 0, mana: 250, spells : create_spells(), effects: Vec::new()};
+    let mut boss = Player{ hp: 13, damage: 8, armor: 0, mana: 0, spells : create_spells(), effects: Vec::new()};
+
+    //First attack
+    let spell = &henry.spells[3].clone();
+    assert!(spell.is_effect());
+    assert!(henry.is_effect_applicable(spell));
+    assert!(henry.has_enough_mana(&spell));
+    henry.cast_spell(&mut boss, &spell);
+    assert_eq!(henry.mana, 77);
+    assert_eq!(henry.effects, vec![spell.clone()]);
+    
+    //Second attack
+    henry.apply_effects(&mut boss);
+    assert_eq!(boss.hp, 10);
+    assert_eq!(henry.effects[0].turns, 5);
+    henry.apply_damage(boss.damage);
+    assert_eq!(henry.hp, 2);
+
+    //Third attack
+    henry.apply_effects(&mut boss);
+    assert_eq!(boss.hp, 7);
+    assert_eq!(henry.effects[0].turns, 4);
+    let spell = henry.spells[0].clone();
+    henry.cast_spell( &mut boss, &spell);
+    assert_eq!(boss.hp, 3);
+    assert_eq!(henry.mana, 24);
+
+    //4th attack
+    henry.apply_effects(&mut boss);
+    assert!(boss.is_died());    
+}
+
+#[test]
+fn test_iterate_over_spells_on_example1(){
+    let mut henry = Player{ hp: 10, damage: 0, armor: 0, mana: 250, spells : create_spells(), effects: Vec::new()};
+    let mut boss = Player{ hp: 13, damage: 8, armor: 0, mana: 0, spells : create_spells(), effects: Vec::new()};
+    assert_eq!(henry.check_double_turn(&mut boss, 3), Some(226));
+}
