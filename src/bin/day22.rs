@@ -187,3 +187,5 @@ fn create_spells()->Vec<Spell>{
         Spell{ name: String::from("Recharge"), cost: 229, damage: 4, healing : 0, mana: 101, armor: 0, turns : 5},
     ]
 }
+
+
